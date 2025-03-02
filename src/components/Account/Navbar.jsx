@@ -6,7 +6,7 @@ const Navbar = () => {
     <>
       <AppBar elevation={0} color="secondary" position="static">
         <Toolbar>
-          <Typography variant="h6">Shortly</Typography>
+          <Typography variant="h6">TinyTrail</Typography>
           <Box ml="auto">
             <Button variant="inherit">Links</Button>
             <Button variant="inherit">Logout</Button>
