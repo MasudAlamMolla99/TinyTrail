@@ -1,7 +1,10 @@
 import { Typography, TextField, Button } from "@mui/material";
 import React, { useState } from "react";
 import { auth } from "../../firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 const Home = () => {
   const [form, setForm] = useState({
@@ -19,6 +22,18 @@ const Home = () => {
   const handleSignup = async () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        form.email,
+        form.password
+      );
+      // console.log("User signed up:", userCredential.user);
+    } catch (error) {
+      console.error("Signup error:", error.message);
+    }
+  };
+  const handleSignin = async () => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(
         auth,
         form.email,
         form.password
@@ -46,6 +61,7 @@ const Home = () => {
         type="password"
       />
       <Button onClick={handleSignup}>Sign Up</Button>
+      <Button onClick={handleSignin}>Signin</Button>
     </>
   );
 };

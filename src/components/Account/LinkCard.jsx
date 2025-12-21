@@ -1,24 +1,52 @@
 import { Typography, Button, Box } from "@mui/material";
 import { BarChart as ChartIcon } from "@mui/icons-material";
 import format from "date-fns/format";
+import { memo } from "react";
 
-const LinkCard = ({ id, createdAt, name, longURL, shortCode, totalClicks }) => {
+const LinkCard = ({
+  id,
+  createdAt,
+  name,
+  longURL,
+  shortCode,
+  totalClicks,
+  deleteLink,
+  copyLink,
+}) => {
+  let dateValue = null;
+
+  if (createdAt?.toDate instanceof Function) {
+    // Firestore Timestamp
+    dateValue = createdAt.toDate();
+  } else if (createdAt instanceof Date) {
+    // JS Date
+    dateValue = createdAt;
+  } else if (typeof createdAt === "number") {
+    // Unix timestamp
+    dateValue = new Date(createdAt);
+  }
+  console.log("Linkcard");
+  const shortUrl = `${window.location.host}/${shortCode}`;
+
   return (
     <Box display="flex" justifyContent="space-between" alignItems="center">
       <Box>
         <Typography color="textSecondary" variant="overline">
-          CRETAED AT {format(createdAt, "d MMM y, HH:mm")}
+          CREATED AT {dateValue ? format(dateValue, "d MMM y, HH:mm") : "—"}
         </Typography>
         <Box my={2}>
           <Typography variant="h5"> {name}</Typography>
           <Typography> {longURL}</Typography>
         </Box>
         <Box display="flex" alignItems="center">
-          <Typography color="primary">
-            {window.location.host}/{shortCode}
-          </Typography>
+          <Typography color="primary">{shortUrl}</Typography>
           <Box mx={2}>
-            <Button size="small" ml={4} variant="outlined">
+            <Button
+              onClick={() => copyLink(shortUrl)}
+              size="small"
+              ml={4}
+              variant="outlined"
+            >
               Copy
             </Button>
           </Box>
@@ -26,7 +54,9 @@ const LinkCard = ({ id, createdAt, name, longURL, shortCode, totalClicks }) => {
             size="small"
             color="secondary"
             disableElevation
-            variant="contained">
+            variant="contained"
+            onClick={() => deleteLink(id)}
+          >
             Delete
           </Button>
         </Box>
@@ -44,4 +74,4 @@ const LinkCard = ({ id, createdAt, name, longURL, shortCode, totalClicks }) => {
   );
 };
 
-export default LinkCard;
+export default memo(LinkCard);

@@ -7,9 +7,18 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-const {setGlobalOptions} = require("firebase-functions");
-const {onRequest} = require("firebase-functions/https");
+const { setGlobalOptions } = require("firebase-functions");
+const { onRequest } = require("firebase-functions/https");
 const logger = require("firebase-functions/logger");
+const { document } = require("firebase-functions/v1/firestore");
+const admin = require("firebase-admin");
+const { onDocumentCreated, onDocumentDeleted } = require("firebase-functions/firestore");
+
+
+admin.initializeApp();
+
+
+
 
 // For cost control, you can set the maximum number of containers that can be
 // running at the same time. This helps mitigate the impact of unexpected
@@ -27,6 +36,38 @@ setGlobalOptions({ maxInstances: 10 });
 // https://firebase.google.com/docs/functions/get-started
 
 // exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
+//   //   logger.info("Hello logs!", {structuredData: true});
 //   response.send("Hello from Firebase!");
 // });
+exports.linkCreated = onDocumentCreated(
+  "users/{userUid}/links/{linkId}",
+  async (event) => {
+    const snapshot = event.data;
+    const { userUid, linkId } = event.params;
+
+    const { longURL, shortCode } = snapshot.data();
+
+    const db = admin.firestore();
+
+    await db.doc(`links/${shortCode}`).set({
+      userUid,
+      linkId,
+      longURL,
+    });
+  }
+);
+exports.linkDeleted = onDocumentDeleted(
+  "users/{userUid}/links/{linkId}",
+  async (event) => {
+    const snapshot = event.data;
+   
+
+  
+    const { shortCode } = snapshot.data();
+
+    const db = admin.firestore();
+
+    // Delete the public short link mapping
+    await db.doc(`links/${shortCode}`).delete();
+  }
+);

@@ -21,7 +21,7 @@ function App() {
       setInitialload(false);
     });
   }, []);
-  console.log(user);
+
   if (initialload)
     return (
       <Box display="flex" justifyContent="center" alignItems="center" mt={10}>
