@@ -7,14 +7,19 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from "react-router-dom";
 import Account from "./components/Account/Account";
 import theme from "./theme";
 import { auth } from "./firebase";
+import LinkRedirect from "./components/LinkRedirect";
 
 function App() {
   const [user, setUser] = useState(null);
-  const [initialload, setInitialload] = useState(true);
+  const { pathname } = useLocation();
+  const [initialload, setInitialload] = useState(
+    pathname == "/account" || pathname == "/" ? true : false
+  );
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       setUser(user);
@@ -31,29 +36,25 @@ function App() {
   return (
     <>
       <ThemeProvider theme={theme}>
-        <Router>
-          <Routes>
-            <Route
-              exact
-              path="/"
-              element={user ? <Navigate to="/account" /> : <Home />}
-            />
-            {/* <Route
+        <Routes>
+          <></>
+          <Route
+            exact
+            path="/"
+            element={user ? <Navigate to="/account" /> : <Home />}
+          />
+          {/* <Route
               exact
               path="/"
               element={ <Home />}
             /> */}
-            <Route
-              path="/account"
-              element={!user ? <Navigate to="/" /> : <Account />}
-            />
+          <Route
+            path="/account"
+            element={!user ? <Navigate to="/" /> : <Account />}
+          />
 
-            {/* <Route
-              path="/account"
-              element={ <Account />}
-            /> */}
-          </Routes>
-        </Router>
+          <Route path="/:shortCode" element={<LinkRedirect />} />
+        </Routes>
       </ThemeProvider>
     </>
   );

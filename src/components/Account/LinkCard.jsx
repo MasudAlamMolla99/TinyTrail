@@ -1,7 +1,6 @@
-import { Typography, Button, Box } from "@mui/material";
 import { BarChart as ChartIcon } from "@mui/icons-material";
 import format from "date-fns/format";
-import { memo } from "react";
+import React, { memo } from "react";
 
 const LinkCard = ({
   id,
@@ -16,61 +15,63 @@ const LinkCard = ({
   let dateValue = null;
 
   if (createdAt?.toDate instanceof Function) {
-    // Firestore Timestamp
     dateValue = createdAt.toDate();
   } else if (createdAt instanceof Date) {
-    // JS Date
     dateValue = createdAt;
   } else if (typeof createdAt === "number") {
-    // Unix timestamp
     dateValue = new Date(createdAt);
   }
-  console.log("Linkcard");
+
   const shortUrl = `${window.location.host}/${shortCode}`;
 
   return (
-    <Box display="flex" justifyContent="space-between" alignItems="center">
-      <Box>
-        <Typography color="textSecondary" variant="overline">
+    <div className="flex flex-col mb-2 sm:flex-row justify-between items-start sm:items-center gap-6 p-6 border border-base-300 rounded-lg bg-base-100">
+
+      {/* Left Side */}
+      <div className="flex-1">
+        <p className="text-xs uppercase text-base-content/60">
           CREATED AT {dateValue ? format(dateValue, "d MMM y, HH:mm") : "—"}
-        </Typography>
-        <Box my={2}>
-          <Typography variant="h5"> {name}</Typography>
-          <Typography> {longURL}</Typography>
-        </Box>
-        <Box display="flex" alignItems="center">
-          <Typography color="primary">{shortUrl}</Typography>
-          <Box mx={2}>
-            <Button
-              onClick={() => copyLink(shortUrl)}
-              size="small"
-              ml={4}
-              variant="outlined"
-            >
-              Copy
-            </Button>
-          </Box>
-          <Button
-            size="small"
-            color="secondary"
-            disableElevation
-            variant="contained"
+        </p>
+
+        <div className="my-3">
+          <h2 className="text-xl font-semibold">{name}</h2>
+
+          <p className="truncate text-base-content/70 max-w-xl">
+            {longURL}
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3 mt-2">
+          <span className="text-primary font-medium">{shortUrl}</span>
+
+          <button
+            onClick={() => copyLink(shortUrl)}
+            className="btn btn-outline btn-sm rounded-none"
+          >
+            Copy
+          </button>
+
+          <button
             onClick={() => deleteLink(id)}
+            className="btn btn-primary btn-sm rounded-none"
           >
             Delete
-          </Button>
-        </Box>
-      </Box>
-      <Box>
-        <Box>
-          <Box display="flex" justifyContent="center" alignItems="center">
-            <Typography>{totalClicks}</Typography>
-            <ChartIcon />
-          </Box>
-          <Typography variant="overline">Total Clicks</Typography>
-        </Box>
-      </Box>
-    </Box>
+          </button>
+        </div>
+      </div>
+
+      {/* Right Side (Clicks) */}
+      <div className="flex flex-col items-center justify-center min-w-[80px]">
+        <div className="flex items-center gap-2 text-lg font-semibold">
+          <span>{totalClicks}</span>
+          <ChartIcon fontSize="small" />
+        </div>
+
+        <p className="text-xs uppercase text-base-content/60 hidden sm:block">
+          Total Clicks
+        </p>
+      </div>
+    </div>
   );
 };
 
